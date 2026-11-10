@@ -5,6 +5,7 @@ No user activity is monitored. Future phases will add explicit read/write APIs.
 
 from __future__ import annotations
 
+from contextlib import closing
 from datetime import datetime, timezone
 from pathlib import Path
 import os
@@ -71,7 +72,7 @@ def db_path(root: Path) -> Path:
 
 def schema_version(path: Path) -> int:
     # Open in read-only mode; a health check must never create a missing DB.
-    with sqlite3.connect(path.as_uri() + "?mode=ro", uri=True, timeout=5) as conn:
+    with closing(sqlite3.connect(path.as_uri() + "?mode=ro", uri=True, timeout=5)) as conn:
         row = conn.execute("SELECT version FROM schema_meta LIMIT 1").fetchone()
     if row is None:
         raise ValueError("Database is missing schema version")
@@ -103,7 +104,7 @@ def init_state(root: Path) -> tuple[Path, bool]:
 
     # SQLite creates the file; remove partially-created files if schema creation fails.
     try:
-        with sqlite3.connect(path, timeout=5) as conn:
+        with closing(sqlite3.connect(path, timeout=5)) as conn, conn:
             conn.execute("PRAGMA foreign_keys = ON")
             conn.executescript(DDL)
             timestamp = datetime.now(timezone.utc).isoformat(timespec="seconds")

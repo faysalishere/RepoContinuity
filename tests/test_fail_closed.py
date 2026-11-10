@@ -1,4 +1,4 @@
-from contextlib import redirect_stderr, redirect_stdout
+from contextlib import closing, redirect_stderr, redirect_stdout
 from io import StringIO
 from pathlib import Path
 import json
@@ -17,14 +17,14 @@ class FailClosedTests(unittest.TestCase):
             root = Path(directory)
             subprocess.run(["git", "init", "-q", directory], check=True)
             path, _ = init_state(root)
-            with sqlite3.connect(path) as db:
+            with closing(sqlite3.connect(path)) as db, db:
                 db.execute("UPDATE schema_meta SET version = 999")
             with redirect_stderr(StringIO()) as errors:
                 code = main(["init", "--root", directory])
             self.assertEqual(code, 1)
             self.assertIn("Unsupported schema version", errors.getvalue())
             self.assertTrue(path.exists())
-            with sqlite3.connect(path) as db:
+            with closing(sqlite3.connect(path)) as db:
                 self.assertEqual(db.execute("SELECT version FROM schema_meta").fetchone()[0], 999)
 
     def test_doctor_does_not_touch_source_files(self):

@@ -1,6 +1,7 @@
 """Foundation schema tests; no user/project files are touched."""
 
 from pathlib import Path
+from contextlib import closing
 import sqlite3
 import tempfile
 import unittest
@@ -16,13 +17,13 @@ class StorageTests(unittest.TestCase):
             self.assertTrue(created)
             self.assertEqual(path, db_path(root))
             self.assertEqual(schema_version(path), SCHEMA_VERSION)
-            with sqlite3.connect(path) as db:
+            with closing(sqlite3.connect(path)) as db:
                 self.assertEqual(db.execute("SELECT COUNT(*) FROM projects").fetchone()[0], 1)
                 self.assertEqual(db.execute("SELECT COUNT(*) FROM tasks").fetchone()[0], 0)
                 self.assertEqual(db.execute("PRAGMA foreign_key_list(evidence)").fetchone()[2], "tasks")
             _, created_again = init_state(root)
             self.assertFalse(created_again)
-            with sqlite3.connect(path) as db:
+            with closing(sqlite3.connect(path)) as db:
                 self.assertEqual(db.execute("SELECT COUNT(*) FROM projects").fetchone()[0], 1)
             self.assertIn("*", (root / ".repocontinuity" / ".gitignore").read_text())
 
@@ -49,7 +50,7 @@ class StorageTests(unittest.TestCase):
     def test_evidence_requires_real_task(self):
         with tempfile.TemporaryDirectory() as directory:
             path, _ = init_state(Path(directory))
-            with sqlite3.connect(path) as db:
+            with closing(sqlite3.connect(path)) as db:
                 db.execute("PRAGMA foreign_keys = ON")
                 with self.assertRaises(sqlite3.IntegrityError):
                     db.execute("INSERT INTO evidence VALUES (?, ?, ?, ?, ?, ?)",
