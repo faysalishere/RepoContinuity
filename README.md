@@ -1,56 +1,90 @@
 # RepoContinuity
 
-**Approval-aware, evidence-verified handoff for AI-assisted software development.**
+**Approval-aware, evidence-linked local project memory for AI-assisted coding.**
 
-> **Status: Phase 1 foundation / pre-alpha. Not yet an AI memory agent, plugin, or working cross-agent handoff engine.**
+[![CI](https://github.com/faysalishere/RepoContinuity/actions/workflows/ci.yml/badge.svg)](https://github.com/faysalishere/RepoContinuity/actions/workflows/ci.yml)
 
-RepoContinuity aims to preserve what an AI-assisted project actually **approved, changed, tested, and left unfinished**, without pretending that a generated summary is evidence of correctness. A future export will be portable between coding assistants.
+**Current status: `v0.2.0a1` — Phase 2 pre-alpha.** RepoContinuity provides an explicit local CLI for project decisions, tasks, test outcomes, SQLite state and Git checkpoints. It **does not automatically read AI conversations, generate cross-agent handoffs, validate code coverage or run background agents.** Those remain future phases in the [approved roadmap](docs/ROADMAP.md).
 
-## Why another continuity tool?
+## What is different?
 
-Several mature open-source/hosted tools already implement agent memory and handoff. RepoContinuity focuses narrowly on **human approval boundaries and explicit verification evidence**. `unverified` will never be treated as `verified` merely because an assistant says a task is done. This distinction is a design goal, not a feature claim for Phase 1.
+- **Proposed vs approved decisions:** recording approval requires a named person; this identity is user-attested, not authenticated.
+- **Complete vs verified tasks:** a task may be marked `verified` only after an explicitly executed, passing command observed at the same clean Git commit. Manual claims do not qualify.
+- **Real repository state:** checkpoints contain an actual Git SHA, branch and staged/dirty flags—not a guessed summary.
+- **Local by default:** SQLite state stays inside Git-ignored `.repocontinuity/`, with no cloud API or telemetry.
 
-## Try the Phase 1 foundation
+A zero exit status is limited evidence that a chosen command passed. It is **not proof** that tests cover all behavior, and local SQLite is not tamper-proof.
 
-Requirements: Python 3.11+ and Git. No API key, server, external Python dependency or AI subscription.
+## Two-minute setup
+
+Requirements: Python 3.11+, Git. No third-party Python runtime dependencies.
 
 ```sh
 git clone https://github.com/faysalishere/RepoContinuity.git
 cd RepoContinuity
 python -m pip install -e .
-repocontinuity --version
 repocontinuity doctor
 repocontinuity init
+repocontinuity checkpoint capture
+```
+
+To use this in another Git repository, run `repocontinuity init` in that project's root. Initialization writes only its own private SQLite state. The state is excluded from Git tracking.
+
+## Decisions and tasks
+
+```sh
+repocontinuity decision add --title "Keep current architecture" --rationale "No approved rewrite"
+repocontinuity decision list
+repocontinuity decision approve --id DECISION_ID --by "Project owner"
+repocontinuity task add --title "Add regression tests"
+repocontinuity task status --id TASK_ID --status complete_unverified
+```
+
+Each command prints JSON. Copy the returned IDs before using them. Approved decisions are immutable through the CLI; removals are soft deletes with `--confirm` and remain accessible through `list --all`.
+
+## Explicit testing and verification
+
+```sh
+# Review this command. It runs with your current user's permissions.
+repocontinuity evidence run --task-id TASK_ID -- python -m unittest discover -s tests
+repocontinuity task verify --id TASK_ID --evidence-id EVIDENCE_ID
+repocontinuity checkpoint list
+```
+
+`evidence run` executes the exact command you pass after `--`, with a timeout. It discards stdout/stderr and records the exit result, SHA/dirty status and an argument digest (not the command text). Do not run untrusted code or put secrets in command arguments. `evidence record` can record manual/review notes but **cannot** independently verify a task. A stale commit or dirty worktree blocks verification.
+
+## Migrate from Phase 1 schema v1
+
+```sh
+repocontinuity doctor
+repocontinuity migrate
 repocontinuity doctor
 ```
 
-If GitHub publishing is not complete, use the source ZIP and replace the clone step with extracting it and entering the project folder. The package can also be used without installation with `PYTHONPATH=src python -m repocontinuity doctor`.
+`init` never upgrades existing databases silently. `migrate` creates a non-overwriting `state.sqlite3.v1.bak` in the private state directory before modifying the DB, preserving original data. Legacy, unsubstantiated `verified` flags are downgraded to unverified in v2 while the originals remain in the backup. For any migration error, keep the backup and inspect the issue; don't delete it.
 
-`doctor` prints read-only JSON diagnostics. `init` explicitly creates `.repocontinuity/state.sqlite3` in the Git repository root. This local state directory is excluded by the provided `.gitignore` and has a nested ignore policy if used in other repositories. Existing initialized state is preserved; there is no background capture or network request.
+## CLI reference
 
-## Architecture
+| Area | Explicit subcommands |
+|---|---|
+| Core | `doctor`, `init`, `migrate` |
+| Decision memory | `decision add/list/update/approve/reject/remove` |
+| Task memory | `task add/list/update/status/verify/remove` |
+| Test/review evidence | `evidence record/run/list` |
+| Git progress | `checkpoint capture/list` |
 
-- **CLI:** Python standard library, explicit commands only.
-- **Persistence:** local SQLite (`schema_version=1`), foreign keys and constrained statuses.
-- **Version provenance:** read-only Git repository discovery; Git commit checkpoint capture is deferred to Phase 2.
-- **Sharing:** future opt-in Markdown/JSON exports; never export SQLite private state by default.
-- **Safety:** no source-code writes, network calls, hooks, automatic watchers, or secret collection.
+Run `repocontinuity <group> <subcommand> --help` for usage. The JSON handoff format is **a design only** in Phase 2; `export`, `import`, integrations and Agent Skills are reserved for Phase 3.
 
-See [architecture](docs/ARCHITECTURE.md), [data contract](docs/DATA_CONTRACT.md), [security boundaries](docs/SECURITY_MODEL.md), [market review](docs/COMPETITORS.md), and [roadmap](docs/ROADMAP.md).
+## Technical documents
 
-## Test
+[Architecture](docs/ARCHITECTURE.md) · [Schema v2](docs/DATA_CONTRACT.md) · [Draft JSON handoff](docs/HANDOFF_JSON_DESIGN.md) · [Security](docs/SECURITY_MODEL.md) · [Competition](docs/COMPETITORS.md) · [Roadmap](docs/ROADMAP.md)
+
+## Testing and limitations
 
 ```sh
 PYTHONPATH=src python -m unittest discover -s tests -v
 ```
 
-CI is configured for Python 3.11-3.13 on Ubuntu, macOS and Windows. The hosted CI result must be checked separately after publication. Tests cover foundation invariants only; they do not demonstrate Phase 2+ functionality.
+CI checks Python 3.11, 3.12 and 3.13 on Ubuntu, macOS and Windows. Check [GitHub Actions](https://github.com/faysalishere/RepoContinuity/actions) for the **current commit's** result; do not assume a previously green run validates later changes. This is pre-alpha, not a compliance tool or production security guarantee.
 
-## Current limitations
-
-- No decision/task recording commands, verification engine, handoff exporter, or integrations yet.
-- No automatic discovery of existing AI sessions.
-- An existing `state.sqlite3` is version-checked, but upgrades and corruption recovery are not yet available.
-- Name/package/trademark availability must be verified before general-release branding.
-
-**License:** MIT. Contributions and design reviews welcome once the API contract is stabilized.
+MIT licensed. Read [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md) before contributing.

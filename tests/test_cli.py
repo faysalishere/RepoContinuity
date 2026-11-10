@@ -7,6 +7,7 @@ import tempfile
 import unittest
 
 from repocontinuity.cli import main
+from repocontinuity.storage import SCHEMA_VERSION
 
 
 class CLITests(unittest.TestCase):
@@ -40,7 +41,7 @@ class CLITests(unittest.TestCase):
             report = json.loads(out.getvalue())
             self.assertTrue(report["git_repository"])
             self.assertTrue(report["initialized"])
-            self.assertEqual(report["schema_version"], 1)
+            self.assertEqual(report["schema_version"], SCHEMA_VERSION)
 
 
 if __name__ == "__main__":

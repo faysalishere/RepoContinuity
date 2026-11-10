@@ -53,7 +53,7 @@ class StorageTests(unittest.TestCase):
             with closing(sqlite3.connect(path)) as db:
                 db.execute("PRAGMA foreign_keys = ON")
                 with self.assertRaises(sqlite3.IntegrityError):
-                    db.execute("INSERT INTO evidence VALUES (?, ?, ?, ?, ?, ?)",
+                    db.execute("INSERT INTO evidence (id,task_id,kind,result,source_ref,recorded_at) VALUES (?, ?, ?, ?, ?, ?)",
                                ("x", "no-task", "test", "pass", "test-log.txt", "2026-11-10T00:00:00Z"))
 
 

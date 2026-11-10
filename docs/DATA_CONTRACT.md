@@ -1,16 +1,21 @@
-# Initial data contract (schema v1)
+# SQLite schema v2 (Phase 2)
 
-The Phase 1 SQLite schema is a persistence foundation, not a public API. Fields are provisional until Phase 2.
+The SQLite database is local operational state, not a cross-model export format.
 
-| Table | Purpose | Validation policy |
+| Table | Important fields | Semantics |
 |---|---|---|
-| `projects` | One entry per initialized repository | UUID, name, UTC timestamp |
-| `decisions` | Proposed/approved/rejected architecture or scope decisions | approved entries must have approver and approval timestamp |
-| `tasks` | Explicit work items | planned, in_progress, blocked, complete_unverified, verified |
-| `evidence` | Task-linked review/test/manual evidence reference | result pass/fail/unknown; foreign key must exist |
-| `checkpoints` | Commit-linked progress snapshots | unverified/verified |
-| `schema_meta` | Migration compatibility | version 1 |
+| `schema_meta` | `version=2` | v1 migration requires explicit command and backup |
+| `projects` | ID, name, created timestamp | Project initialized under Git root |
+| `decisions` | title, rationale, proposed/approved/rejected, approved_by, approved_at, deleted_at | Explicit approval, no editing of approved decisions |
+| `tasks` | planned/in_progress/blocked/complete_unverified/verified, `verified_evidence_id`, deleted_at | Verified requires observed passing test evidence |
+| `evidence` | task_id, kind, result, source_ref, `observed`, `git_sha`, `git_dirty` | Observed=1 only for actual tool-launched command |
+| `checkpoints` | git SHA, branch, staged/dirty flags, status | Capture defaults to unverified; only real Git commits |
+| `activity_log` | entity ID, action, timestamp | Metadata-only append log (not a tamper-proof audit log) |
 
-**Important:** SQL constraints alone do not prove tests ran. Enforcing evidence-backed status transitions and signed/traceable approval is a Phase 2 requirement. Phase 1 does not expose arbitrary writes or permit marking anything verified through the CLI.
+The database enforces foreign keys, status checks, immutable evidence records and a trigger preventing an unsupported `verified` task status. `verified` checkpoints are rejected. The CLI also validates Git cleanliness and the exact commit SHA.
 
-Future JSON exports should contain `schema_version`, `project`, `git`, `decisions`, `tasks`, `evidence`, `pending`, and `generated_at`, and never silently include absolute local paths, credentials or hidden source files. Exact JSON schema will be approved before Phase 3.
+**Caution:** manually supplied decision text, evidence URLs and approver labels may contain sensitive material. No automatic redaction of the private SQLite database is promised. Review values before recording; never commit or share `.repocontinuity/`.
+
+V1 columns remain and legacy records are retained across migration, apart from *status downgrades* for unsubstantiated legacy `verified` entries. A protected SQLite backup preserves original data.
+
+The [handoff JSON contract](HANDOFF_JSON_DESIGN.md) is a proposal for Phase 3. No export or import capability is implemented in this phase.

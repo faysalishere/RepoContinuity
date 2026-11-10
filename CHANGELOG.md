@@ -10,3 +10,12 @@
 - Documented market overlap, security boundaries, roadmap and data contract.
 
 **Not released:** No public GitHub repository or package registry release is implied by this file.
+
+## 0.2.0a1 — Phase 2: Memory & Checkpoints (2026-11-10)
+
+- Added explicit decision/task management with approvals and soft deletions.
+- Added observed test evidence and evidence-linked task verification for clean Git commits.
+- Added Git SHA checkpoints with dirty/staged flags and no captured private paths.
+- Added SQLite schema v2 and explicit v1-to-v2 migration with protected local backup.
+- Added checks to downgrade unsubstantiated legacy verification and reject accidental false verification.
+- Documented the proposed Phase 3 JSON handoff format; no exporter ships yet.

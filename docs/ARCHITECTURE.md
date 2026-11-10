@@ -1,49 +1,28 @@
-# Architecture Decision Record — Phase 1 (2026-11-10)
+# Architecture Decision Record — Phase 2 (2026-11-10)
 
-Status: proposed architecture implemented as a local scaffold; later phases require separate approval.
+Status: Phase 1 foundation preserved; owner approved Phase 2 Memory & Checkpoints. Future phases require separate approval. CreativeCode Engine is independent and untouched.
 
-## Scope and boundaries
+## Boundaries
 
-RepoContinuity is an independent repository. It must never modify CreativeCode Engine, existing project architectures or user project source files. The CLI starts with read-only `doctor` and explicit `init`. No daemon, hook, AI API, auto-sync, or cloud component ships in Phase 1.
+- **CLI:** Python 3.11+ standard library; explicit operations, JSON output, local only. No daemon, hooks, AI model, agent plugin, network request or autonomous chat capture.
+- **Persistence:** SQLite `.repocontinuity/state.sqlite3` under Git root, schema version 2; low-concurrency, single-host use. Every connection is explicitly closed; transactions cover multi-row mutations. The implementation does not support multi-machine coordinated writes or network filesystems.
+- **Git:** read-only `rev-parse`, `status`, `diff`, and branch retrieval. Real HEAD SHA recorded; uncommitted/staged flags captured without storing private file names. The private state directory is excluded from Git dirty checks. Unborn HEAD is rejected for checkpoints.
+- **Evidence:** user-attested reports (`record`) are distinguished from command-observed exit codes (`run`). `run` executes only a user-explicit program with a timeout, no shell interpolation, and suppressed output. SHA and clean state are required before a task can be marked verified.
+- **Approvals:** only proposed decisions can be approved/rejected; user-provided approver is stored verbatim. This is *an approval record*, not authenticated identity or cryptographic attestation.
+- **Delete semantics:** decisions and tasks use `deleted_at` soft deletion; evidence and audit log rows are retained.
 
-### Modules
+## Schema migration
 
-1. `cli.py` — command routing and machine-readable doctor output.
-2. `gitinfo.py` — read-only discovery of the Git working tree with argument-array subprocess invocation and timeout.
-3. `storage.py` — versioned SQLite schema; creates only opt-in project state directory.
-4. `docs/` — data contract, security requirements and roadmap.
-5. `tests/` — stdlib unit tests in isolated temporary directories.
+Old v1 data remains readable by SQLite but is not automatically upgraded. `migrate` verifies version 1, writes `state.sqlite3.v1.bak` using SQLite's native `backup()` API, and changes the schema in a transaction. It fails when the backup path already exists, when the schema is unknown, or when preconditions do not hold. Preserves legacy project, decision and task IDs. Legacy `verified` task/checkpoint flags are **downgraded** because v1 contains no trustworthy tool-observed evidence; the original values remain in the private backup. The migration is **forward-only**; backup restoration is manual and never automatic.
 
-## Storage
+## Verification invariants
 
-`<git-root>/.repocontinuity/state.sqlite3` is local-only by default. SQLite is suitable for single-user and low-write concurrency; it requires no additional server. WAL and shared network filesystem operation are not enabled. Future parallel agents require explicit serialized writes or a revised coordination layer; **do not assume SQLite offers multi-machine coordination**.
+1. An explicit `evidence run` records process exit status; self-reported `pass` cannot qualify.
+2. Passing evidence must be linked to the specific task, its Git commit, and no dirty working tree before and after the test.
+3. `task verify` re-checks the current repository state and links the evidence ID. SQLite triggers prevent accidental `verified` updates without eligible observed evidence.
+4. Verification is **not** a guarantee of coverage or test correctness. Local SQLite access remains user-controlled and can be deliberately modified.
+5. Checkpoint capture is always unverified; there is no Phase 2 checkpoint validation feature.
 
-Tables: `schema_meta`, `projects`, `decisions`, `tasks`, `evidence`, `checkpoints`. The v1 schema defines constrained statuses but not the business rules for transitions. Phase 2 must enforce that `verified` requires an actual passing evidence reference and must treat verbal AI claims as unverified.
+## Release and future boundaries
 
-## Provenance contract
-
-Every future handoff must state:
-
-- last observed Git SHA and whether the tree was dirty;
-- which decisions are approved and by whom;
-- which tasks were completed versus independently verified;
-- evidence references and exact checks performed;
-- known blockers, missing evidence and next allowed actions.
-
-**Evidence is not equivalent to a claim.** Git SHAs, test logs and timestamps are traceability metadata; verification still depends on actual test results and their scope.
-
-## Format and portability
-
-SQLite is the private operational store, not the interchange format. Future explicit Markdown+JSON export uses versioned schemas, redaction, bounded output and deterministic order. No silent export of `.env`, API tokens, files or conversations.
-
-## Versioning and migrations
-
-`schema_meta.version = 1`. No auto-migration; unknown schema versions fail closed. Future migrations require backup and reversible test fixtures.
-
-## Definition of done for Phase 1
-
-- local skeleton with `init`/`doctor`;
-- tests validating no writes on doctor, idempotent init, schema version and FK constraints;
-- CI config and docs;
-- repository created and pushed **only when authenticated creation permissions exist**;
-- no claims of production handoff in this phase.
+Phase 3 will implement reviewed, versioned Markdown/JSON handoff exports and skills. Phase 2 contains only a JSON export **design**; not an exporter. Automatic code execution, remote sync, hook installation, and production deployments are excluded.
