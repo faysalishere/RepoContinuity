@@ -10,6 +10,7 @@ import sys
 
 from . import __version__
 from .gitinfo import git_root
+from .handoff import build_packet, serialize, markdown, inspect_packet, write_export
 from .memory import checkpoint_action, decision_action, evidence_action, task_action, TASK_STATUSES
 from .storage import db_path, init_state, migrate_state, schema_version, SCHEMA_VERSION
 
@@ -69,6 +70,17 @@ def create_parser() -> argparse.ArgumentParser:
     evidence["run"].add_argument("command_args", nargs=argparse.REMAINDER)
 
     checkpoints = group("checkpoint", {"capture": "Capture actual Git SHA and dirty flags", "list": "List checkpoints"})
+
+    # No implicit import, writes, code execution or authorization from handoff text.
+    handoff = group("handoff", {
+        "export": "Render a versioned JSON/Markdown handoff from local state",
+        "validate": "Validate an untrusted handoff JSON without applying it",
+        "import": "Read-only import preflight (never writes state)",
+    })
+    handoff["export"].add_argument("--format", choices=("json", "markdown"), default="json")
+    handoff["export"].add_argument("--out", type=Path, help="Explicit new output filename (never overwritten)")
+    for action in ("validate", "import"):
+        handoff[action].add_argument("--file", type=Path, required=True, help="Untrusted JSON handoff to inspect")
     return parser
 
 
@@ -116,6 +128,20 @@ def main(argv: list[str] | None = None) -> int:
             result = evidence_action(root, args.action, args)
         elif args.command == "checkpoint":
             result = checkpoint_action(root, args.action)
+        elif args.command == "handoff":
+            if args.action == "export":
+                packet = build_packet(root)
+                body = serialize(packet) if args.format == "json" else markdown(packet)
+                if args.out is None:
+                    print(body, end="")
+                    return 0
+                write_export(args.out.expanduser(), body)
+                result = {"written": True, "format": args.format, "schema_id": packet["schema_id"],
+                          "warning": "Output may alter Git dirty state; re-check Git before trusting a handoff."}
+            else:
+                result = inspect_packet(root, args.file.expanduser())
+                if args.action == "import":
+                    result["imported"] = False
         else:
             return 2
         print(json.dumps(result, indent=2, sort_keys=True))

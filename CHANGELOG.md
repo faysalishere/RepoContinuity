@@ -13,9 +13,18 @@
 
 ## 0.2.0a1 — Phase 2: Memory & Checkpoints (2026-11-10)
 
-- Added explicit decision/task management with approvals and soft deletions.
-- Added observed test evidence and evidence-linked task verification for clean Git commits.
-- Added Git SHA checkpoints with dirty/staged flags and no captured private paths.
-- Added SQLite schema v2 and explicit v1-to-v2 migration with protected local backup.
-- Added checks to downgrade unsubstantiated legacy verification and reject accidental false verification.
-- Documented the proposed Phase 3 JSON handoff format; no exporter ships yet.
+- Added explicit decision and task create/list/update/soft-delete operations and human-attested approval.
+- Added observed test evidence records and task verification linked to clean Git SHA.
+- Added real Git checkpoint capture with staged/dirty flags, no source file names.
+- Introduced SQLite v2 schema and explicit SQLite-native backed-up migration from v1.
+- Added fail-closed guards for unverified legacy statuses and immutable evidence rows.
+- Documented future portable JSON handoff format; **no handoff exporter or AI integration is shipped**.
+
+## 0.3.0a1 — Phase 3: AI Handoff & Skills (2026-11-11)
+
+- Added opt-in, bounded, allowlisted JSON/Markdown handoff export.
+- Added strict schema validation, duplicate-key rejection, size limits and read-only `handoff import` preflight.
+- Added Git SHA/dirty-state checks, stale verification downgrade on export and security warning markers.
+- Added best-effort redaction, Markdown escaping and five portable Agent Skills.
+- Kept SQLite schema v2 and earlier CLI operations unchanged.
+- No automatic session capture, hooks, network sync or state merging.

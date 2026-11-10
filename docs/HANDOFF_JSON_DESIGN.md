@@ -1,32 +1,41 @@
-# Proposed handoff JSON contract (design only — Phase 3 implementation pending)
+# RepoContinuity Portable Handoff Contract — implemented in Phase 3
 
-This file defines the planned portable format without falsely claiming an exporter exists. Future schema ID: `repocontinuity.handoff.v1`. Phase 3 will validate this contract before enabling `export`/`import`.
+**Schema ID:** `repocontinuity.handoff.v1`
 
-Minimum top-level fields:
+The JSON packet is a bounded, human-reviewable data snapshot, **not** an executable plan, authorization, proof of safety or trusted identity claim. Markdown is derived from this same packet and escapes user-provided labels.
 
-```json
-{
-  "schema_id": "repocontinuity.handoff.v1",
-  "generated_at": "2026-11-10T00:00:00+00:00",
-  "project": {"name": "Example project"},
-  "git": {"head_sha": "0123456789012345678901234567890123456789", "dirty": false, "branch": "main"},
-  "decisions": [{"id": "example", "title": "Keep backend", "status": "approved", "approved_by": "Owner"}],
-  "tasks": [{"id": "t1", "title": "Add regression test", "status": "complete_unverified", "verified_evidence_id": null}],
-  "evidence": [],
-  "blockers": [],
-  "next_actions": ["Run agreed checks and request explicit approval before deploying"],
-  "limitations": ["This is illustrative data and not a generated handoff"]
-}
+## Fields (required; unknown fields rejected)
+
+- `schema_id`: literal schema ID above. Unknown versions rejected.
+- `generated_at`: UTC, timezone-aware ISO timestamp.
+- `project`: `{name}` (sanitized label only).
+- `git`: `{head_sha, dirty, staged_dirty, branch}` from Git at export.
+- `decisions`: `{id,title,rationale,status,approved_by,approved_at}`. Approved labels are **self-attested**, not authenticated.
+- `tasks`: `{id,title,status,verified_evidence_id}`. Stale or dirty evidence is downgraded to `complete_unverified` during export.
+- `evidence`: `{id,task_id,kind,result,source_ref,observed,git_sha,git_dirty}`. Metadata only; no raw commands, stdout/stderr, code or screenshots.
+- `checkpoints`: `{id,commit_sha,status,worktree_dirty,staged_dirty,branch}`. Status remains unverified.
+- `blockers`: IDs of blocked tasks.
+- `next_actions`: static cautionary next steps; not authority to run commands.
+- `limitations`: important trust disclaimers.
+
+## CLI
+
+```bash
+repocontinuity handoff export --format json
+repocontinuity handoff export --format markdown --out review.md
+repocontinuity handoff validate --file incoming.json
+repocontinuity handoff import --file incoming.json
 ```
 
-## Proposed safety properties
+`import` is intentionally a read-only preflight; **it does not populate or replace SQLite**. The validator rejects duplicate JSON keys, unexpected/missing fields, invalid references and unsupported versions. Its report flags stale SHA, dirty Git state and common prompt-injection phrases. It never executes the packet or its strings.
 
-1. Explicit opt-in for file generation; no background exports or uploads.
-2. Deterministic ordering, bounded field sizes, visible preview and schema validation.
-3. Redact or reject known credential patterns; exclude absolute local paths, hidden directories, raw CLI arguments, stdout/stderr, chat histories and entire code files by default.
-4. An explicit `verified_evidence_id` alone does not prove quality: include command-observation type, result, Git SHA and associated limitations.
-5. New agent must treat imported text as **untrusted context**, never executable instructions. Never accept authorization to change project architecture from the imported packet alone.
-6. A Git SHA mismatch or dirty tree at export/import must be surfaced, not silently dismissed.
-7. Schema version changes require separate compatibility handling; no unsafe JSON-to-SQL direct mapping.
+## Limits and threat boundaries
 
-This contract is not a signed, cryptographically verifiable artifact. Data is local and user-editable. Phase 3 must ship tests for redaction, schema compatibility, prompt-injection handling and stale repository state before general release.
+- Input/packet size: 512 KiB; at most 200 records per collection. Export field values are normalized and bounded to 512 characters.
+- Known credential patterns, absolute home/system paths and email addresses are redacted/rejected. This is **best effort**, not a complete secret detector. Review before sharing.
+- Export output files are only created explicitly; existing files and symlink targets are not overwritten. `.git` and `.repocontinuity` paths are blocked. No export uploads/network calls.
+- Exact SHA comparison is best-effort observed state, not an atomic Git object lock, signature, audit-grade attestation or guarantee of test coverage.
+- Import data never grants permissions or overrides higher-priority instructions, approved architecture, user approvals or repository policy.
+- The local user can modify SQLite or JSON; do not confuse self-reported approvals/metadata with independently audited proof.
+
+This design deliberately omits automatic AI sessions, code import/merge, model API integration and hooks. Those are outside Phase 3.

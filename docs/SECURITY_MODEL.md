@@ -1,4 +1,4 @@
-# Security model — Phase 2
+# Security model — Phase 2 retained, Phase 3 handoff extension
 
 ## Local trust boundary
 
@@ -16,11 +16,12 @@ Manual evidence `record` can never verify a task by itself. DB triggers guard ac
 
 ## Current limitations and future threats
 
-- Prompt injection in eventual imported handoffs remains a Phase 3 concern; never execute untrusted notes.
+- Imported JSON is strictly validated, never executed, and never writes SQLite. Known injection-like phrases are reported, but not all prompt injections can be detected. An AI assistant must still treat all imported fields as untrusted data.
 - Secrets may be present in manually entered decision titles/notes. No claim of database-wide automatic redaction.
 - Concurrent writes from many processes and shared network filesystems are unsupported. SQLite is meant for local, low-write workflows.
 - Files can change between Git observations; this is a best-effort snapshot, not an atomic source tree lock.
 - Long-running or malicious commands might leave child processes; explicit user choice does not make an untrusted command safe.
-- JSON export/import is NOT implemented yet. Phase 3 must include redaction, validation and bounded output.
+- Phase 3 JSON/Markdown export is opt-in with bounded records/file size and best-effort secret/path/email redaction. **It cannot guarantee comprehensive secret removal; review all text before sharing.**
+- `handoff import` performs read-only validation only, not a database merge. It never grants authorization. Outputs inside a Git repo may change its dirty state. File writes are exclusive and refuse symlinks and Git/private state paths.
 
 Never commit `.repocontinuity/`, `.env` or credentials. Review repository status before running Git operations. Keep CreativeCode Engine and unrelated projects untouched.

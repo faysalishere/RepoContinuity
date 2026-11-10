@@ -1,4 +1,4 @@
-# Architecture Decision Record — Phase 2 (2026-11-10)
+# Architecture Decision Record — Phase 2 preserved, Phase 3 extension (2026-11-11)
 
 Status: Phase 1 foundation preserved; owner approved Phase 2 Memory & Checkpoints. Future phases require separate approval. CreativeCode Engine is independent and untouched.
 
@@ -25,4 +25,4 @@ Old v1 data remains readable by SQLite but is not automatically upgraded. `migra
 
 ## Release and future boundaries
 
-Phase 3 will implement reviewed, versioned Markdown/JSON handoff exports and skills. Phase 2 contains only a JSON export **design**; not an exporter. Automatic code execution, remote sync, hook installation, and production deployments are excluded.
+Phase 3 adds `handoff.py` for explicit, allowlisted Git+SQLite read-only snapshots, strict JSON schema/size/reference validation, Markdown escaping and non-overwriting export file writes. Import is validation-only; it cannot execute user text or merge SQL rows. Five `skills/*/SKILL.md` documents use Agent Skills-style YAML frontmatter and have no automatic hook/install action. `SCHEMA_VERSION` remains 2; only the portable handoff format uses `repocontinuity.handoff.v1`. Remote sync, automatic session capture, and production deployments are excluded. See `docs/HANDOFF_JSON_DESIGN.md` and `docs/CROSS_AGENT_USAGE.md`.

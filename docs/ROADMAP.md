@@ -1,21 +1,20 @@
 # Approved roadmap — RepoContinuity
 
-Phase changes require owner approval. CreativeCode Engine must remain separate and unchanged.
+Phase changes require owner approval. CreativeCode Engine remains separate and unchanged.
 
-- **Phase 1 — Foundation & Architecture: COMPLETE.** Competitor/name audit, GitHub repository, Python CLI skeleton, SQLite schema v1, 9/9 cross-platform CI jobs.
-- **Phase 2 — Memory & Checkpoints: COMPLETE (9/9 GitHub Actions matrix jobs).** Explicit decision/task CRUD, approval statuses, observed test evidence + verification constraints, actual Git SHA checkpoints, backed-up SQLite v1→v2 migration and a proposed JSON handoff contract.
-- **Phase 3 — AI Handoff & Skills: NOT STARTED.** Versioned Markdown/JSON packets, five reusable SKILL.md workflows, model-agnostic instructions and safe import validation.
-- **Phase 4 — Public Release: NOT STARTED.** Production-grade tests, package/release pipeline, interactive quick start, security review, cross-platform compatibility.
-- **Phase 5 — Real User Validation: NOT STARTED.** Measure real handoff accuracy, task state loss, incorrect completion claims, setup success, repeat usage and interviews.
+- **Phase 1 — Foundation & Architecture: COMPLETE.** Competitor/name audit, Python CLI skeleton, SQLite schema v1, 9/9 cross-platform CI jobs.
+- **Phase 2 — Memory & Checkpoints: COMPLETE.** Explicit decisions/tasks, human-attested approval, observed evidence, real Git checkpoints, protected v1→v2 migration. 9/9 CI jobs passed.
+- **Phase 3 — AI Handoff & Skills: IMPLEMENTED (CI VERIFICATION PENDING).** Versioned JSON/Markdown exports, safe read-only import validation, five portable Agent Skills, tests and docs.
+- **Phase 4 — Public Release: NOT STARTED.** Production-grade test coverage, quick start, release packaging, security audit and compatibility hardening.
+- **Phase 5 — Real User Validation: NOT STARTED.** Measure context loss, handoff correctness, setup success and repeated use.
 
-## Phase 2 exit checklist
+## Phase 3 exit checklist
 
-- [x] Preserve Phase 1 CLI, package, schema compatibility and decisions.
-- [x] Explicit decision/task create/read/update/soft-delete with approval boundaries.
-- [x] Real Git checkpoint capture and dirty/staged state handling.
-- [x] Evidence-linked task verification, no auto-claim for user-entered success.
-- [x] Explicit database migration with non-overwriting backup and legacy status downgrade.
-- [x] Document proposed JSON handoff design (export implementation stays Phase 3).
-- [x] Local integration/security tests.
-- [x] GitHub deployment, full 9-job CI and read-back validation.
-- [ ] Owner approval before Phase 3.
+- [x] Inspect and preserve Phase 2 GitHub source and approved boundaries.
+- [x] Export allowlisted, versioned JSON and human-reviewable Markdown on explicit request.
+- [x] Reject invalid or oversized packets; import is validation-only and never writes project state.
+- [x] Surface stale Git state, dirty trees and unverified evidence; avoid false verification.
+- [x] Package five Agent Skills with standard YAML frontmatter and safe instructions.
+- [x] Add local tests and model-agnostic usage documentation.
+- [ ] Verify GitHub Actions cross-platform matrix and remote readback after push.
+- [ ] Owner approval before Phase 4.
