@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/faysalishere/RepoContinuity/actions/workflows/ci.yml/badge.svg)](https://github.com/faysalishere/RepoContinuity/actions/workflows/ci.yml)
 
-**Current status: `v0.3.0a1` (Phase 3 pre-alpha).** RepoContinuity provides an explicit local CLI for project decisions, tasks, observed test outcomes, Git checkpoints and **versioned JSON/Markdown handoffs**. Five reusable, model-agnostic Agent Skills are included. **No automatic chat reading, session transfer, remote sync, model integration, or production-readiness certification.**
+**Current status: `v0.4.0b1` (Phase 4 public-beta candidate).** RepoContinuity provides an explicit local CLI for project decisions, tasks, observed test outcomes, Git checkpoints and **versioned JSON/Markdown handoffs**. Five reusable, model-agnostic Agent Skills are included. **No automatic chat reading, session transfer, remote sync, model integration, or production-readiness certification.**
 
 ## What is different?
 
@@ -18,6 +18,9 @@ A chat summary can say "done" even when no test ran. RepoContinuity deliberately
 Verification means an explicitly selected command returned exit code 0 for a clean Git state. It **does not** mean the test command covers all behavior, or that the contents of the local SQLite database are tamper-proof.
 
 ## Quick start
+
+**New:** [2-minute safe interactive demo](docs/QUICK_START.md) runs in a disposable Git repo and never modifies your real project. Run `python examples/quickstart_demo.py` after installing from source.
+
 
 Requires Python 3.11+ and Git. No third-party Python runtime dependencies.
 
@@ -70,7 +73,7 @@ repocontinuity handoff validate --file handoff.json
 repocontinuity handoff import --file handoff.json
 ```
 
-Handoff schema: `repocontinuity.handoff.v1`. JSON is structured portable **untrusted data**, Markdown is for human review. `import` is deliberately an alias for **read-only preflight validation**, not an importer that merges approvals or tasks. The validation report flags stale SHA, Git dirty state and common instruction-like text. All imported approvals and evidence remain untrusted until independently rechecked. The exporter downgrades stale `verified` task status to `complete_unverified` without changing your SQLite database. 
+Handoff schema: `repocontinuity.handoff.v1`. JSON is structured portable **untrusted data**, Markdown is for human review. `import` is deliberately an alias for **read-only preflight validation**, not an importer that merges approvals or tasks. The validation report flags stale SHA, Git dirty state and common instruction-like text. All incoming packets require human review even if their structural checks pass. All imported approvals and evidence remain untrusted until independently rechecked. The exporter downgrades stale `verified` task status to `complete_unverified` without changing your SQLite database. 
 
 Export uses an allowlist and best-effort redaction of common credentials, paths and email addresses, with size/record limits. **Redaction is not comprehensive**: always review private notes before sharing or committing handoffs. Writing an export inside the repo makes the worktree dirty; run a new status check before trusting a snapshot. Handoff files are never automatically committed, uploaded or installed anywhere.
 
@@ -119,6 +122,6 @@ Run `repocontinuity <group> <command> --help` for exact flags. Removals are **so
 PYTHONPATH=src python -m unittest discover -s tests -v
 ```
 
-GitHub Actions tests Python 3.11–3.13 on Ubuntu, macOS and Windows. Until the current CI run is green, cross-platform support for this change is not verified. The project is **pre-alpha**; do not rely on it as a compliance platform or authoritative security audit.
+GitHub Actions tests Python 3.11–3.13 on Ubuntu, macOS and Windows. Until the current CI run is green, cross-platform support for this change is not verified. The project is a **public-beta candidate**; do not rely on it as a compliance platform or authoritative security audit. See [release notes](RELEASE_NOTES.md), [release process](docs/RELEASE_PROCESS.md) and [security audit](docs/SECURITY_AUDIT.md).
 
 MIT licensed. See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).

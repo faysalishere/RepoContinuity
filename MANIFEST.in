@@ -1,0 +1,11 @@
+include README.md LICENSE CHANGELOG.md SECURITY.md CONTRIBUTING.md RELEASE_NOTES.md
+recursive-include docs *.md
+recursive-include examples *.md *.py
+recursive-include scripts *.py
+recursive-include skills *.md
+recursive-include tests test_*.py
+prune .repocontinuity
+prune .venv
+prune build
+prune dist
+global-exclude *.pyc *.pyo .env *.db *.sqlite3 *.pem *.key

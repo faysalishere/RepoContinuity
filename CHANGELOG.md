@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0b1 — Phase 4 public-beta candidate (2026-11-11)
+
+- Interactive, isolated 2-minute demo with no writes to user projects.
+- Safer untrusted JSON parsing (bounded read, no NaN/Infinity), review-by-default import preflight and symlink ancestor checks.
+- Added integration/security regression tests, release preflight validator and reproducible wheel smoke workflow.
+- Documented public release process, security limits, packaging and handoff examples.
+- Source is published separately from GitHub Releases; release tag status must be verified independently.
+
 ## 0.1.0a1 — Phase 1 foundation (2026-11-10)
 
 - Initialized a stand-alone repository structure for RepoContinuity.

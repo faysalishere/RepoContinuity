@@ -294,15 +294,24 @@ def _no_duplicate_keys(pairs: list[tuple]) -> dict:
     return out
 
 
+def _reject_nonfinite(value: str) -> None:
+    raise ValueError("Non-finite JSON values are not permitted")
+
+
 def inspect_packet(root: Path, file: Path) -> dict:
     """Read external JSON as untrusted data, with zero DB writes and zero execution."""
     if file.is_symlink() or not file.is_file():
         raise ValueError("Handoff source must be a regular non-symlink file")
     if file.stat().st_size > MAX_FILE_BYTES:
         raise ValueError("Handoff JSON exceeds 512 KiB limit")
+    # Read at most limit + 1 bytes even if the file grows between stat() and read().
     try:
-        with file.open("r", encoding="utf-8") as stream:
-            payload = json.load(stream, object_pairs_hook=_no_duplicate_keys)
+        with file.open("rb") as stream:
+            raw = stream.read(MAX_FILE_BYTES + 1)
+        if len(raw) > MAX_FILE_BYTES:
+            raise ValueError("Handoff JSON exceeds 512 KiB limit")
+        payload = json.loads(raw.decode("utf-8"), object_pairs_hook=_no_duplicate_keys,
+                             parse_constant=_reject_nonfinite)
     except (json.JSONDecodeError, UnicodeError, RecursionError, OverflowError) as exc:
         raise ValueError("Invalid UTF-8 JSON handoff") from exc
     validate_shape(payload)
@@ -323,7 +332,7 @@ def inspect_packet(root: Path, file: Path) -> dict:
         "validation_only": True,
         "stale_git_sha": stale,
         "dirty_git_tree": dirty,
-        "requires_review": stale or dirty or injection > 0,
+        "requires_review": True,  # Untrusted approvals and evidence always require human review.
         "suspicious_instruction_like_fields": injection,
         "decisions": len(payload["decisions"]),
         "tasks": len(payload["tasks"]),
@@ -371,8 +380,8 @@ def write_export(path: Path, body: str) -> None:
         raise ValueError("Do not write handoff files into Git internals or private state")
     if path.is_symlink() or path.exists():
         raise ValueError("Output path exists or is a symlink; choose a new filename")
-    if not path.parent.is_dir() or path.parent.is_symlink():
-        raise ValueError("Output directory must already exist and must not be a symlink")
+    if not path.parent.is_dir() or any(part.is_symlink() for part in (path.parent, *path.parent.parents)):
+        raise ValueError("Output directory must exist and have no symlinked ancestors")
     flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
     if hasattr(os, "O_NOFOLLOW"):
         flags |= os.O_NOFOLLOW
