@@ -6,6 +6,12 @@
 
 **Current status: `v0.4.0b1` (Phase 4 public-beta candidate).** RepoContinuity provides an explicit local CLI for project decisions, tasks, observed test outcomes, Git checkpoints and **versioned JSON/Markdown handoffs**. Five reusable, model-agnostic Agent Skills are included. **No automatic chat reading, session transfer, remote sync, model integration, or production-readiness certification.**
 
+## Phase 5 — Independent user validation (open for feedback)
+
+**Seeking real testers.** Try the [10–15 minute, consent-based pilot](docs/USER_STUDY.md) and submit sanitized feedback via [GitHub's user-study issue form](https://github.com/faysalishere/RepoContinuity/issues/new/choose). A [fictional sample handoff](examples/study_handoff.md) and [answer key](docs/STUDY_ANSWER_KEY.md) help test context fidelity without sharing a real project. The [scorecard](docs/VALIDATION_METRICS.md) defines success and failure criteria **before** reports arrive. [Current validation status](docs/VALIDATION_STATUS.md): no independent participant results have yet been verified.
+
+The CLI remains local and opt-in; no analytics or report uploads are built in. Independent survey feedback should not be mistaken for an official GitHub pre-release: the `v0.4.0b1` tag/release is still pending.
+
 ## What is different?
 
 A chat summary can say "done" even when no test ran. RepoContinuity deliberately separates:

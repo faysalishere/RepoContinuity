@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased — Phase 5 independent-user validation setup (2026-11-11)
+
+- Added opt-in user study guide, synthetic handoff and fixed comprehension answer key.
+- Added voluntary GitHub feedback issue form and privacy warnings.
+- Added an offline, consent-gated study aggregator that excludes internal runs and rejects duplicate respondents.
+- Predeclared validation thresholds; external participant results and seven-day repeat usage are **not yet observed**.
+- No changes to the existing CLI, SQLite schema, paid services or automatic telemetry.
+
+
 ## 0.4.0b1 — Phase 4 public-beta candidate (2026-11-11)
 
 - Interactive, isolated 2-minute demo with no writes to user projects.

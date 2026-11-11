@@ -1,0 +1,71 @@
+name: User study feedback
+description: Phase 5 voluntary, sanitized early-user feedback
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This form creates a **public GitHub issue**. Never paste secrets, private repo content, chat history, emails, machine usernames, paths or raw handoff files. Participation is voluntary. Failure reports and negative feedback are welcome. Read [the study guide](https://github.com/faysalishere/RepoContinuity/blob/main/docs/USER_STUDY.md) first.
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Operating system
+      options: [Windows, macOS, Linux, Other]
+    validations:
+      required: true
+  - type: dropdown
+    id: setup
+    attributes:
+      label: First-run demo outcome
+      options: [Succeeded first try, Succeeded after troubleshooting, Did not succeed, Did not attempt]
+    validations:
+      required: true
+  - type: dropdown
+    id: time
+    attributes:
+      label: Approximate setup time
+      options: [Under 2 minutes, 2–5 minutes, 6–10 minutes, More than 10 minutes, Not measured]
+  - type: dropdown
+    id: comprehension
+    attributes:
+      label: Correct answers out of 5 (using the fixed answer key)
+      options: [0, 1, 2, 3, 4, 5, Did not attempt]
+  - type: dropdown
+    id: handoff_mode
+    attributes:
+      label: How did you answer the five handoff questions?
+      options: [Self only, AI assistant, Both, Did not attempt]
+  - type: dropdown
+    id: false_verified
+    attributes:
+      label: Did anything incorrectly label an unverified task as verified?
+      options: [Yes, No, Not sure / did not attempt]
+    validations:
+      required: true
+  - type: textarea
+    id: experience
+    attributes:
+      label: Biggest friction or confusing step
+      description: Sanitized description only; never include full logs or sensitive data.
+      placeholder: What was difficult, or what did not work?
+    validations:
+      required: true
+  - type: textarea
+    id: value
+    attributes:
+      label: Actual use case and alternatives
+      description: Would you use this voluntarily? Why/why not? Is a plain chat summary or another tool enough?
+    validations:
+      required: true
+  - type: dropdown
+    id: reuse
+    attributes:
+      label: Have you actually used it again after at least 7 days?
+      options: [Yes, No, Not yet seven days / not measured]
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Optional consent to include anonymized observations in a local aggregate
+      options:
+        - label: I consent to having my answers summarized anonymously for the RepoContinuity study; I have removed sensitive content.
+          required: false

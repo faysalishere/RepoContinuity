@@ -5,8 +5,8 @@ Phase changes require owner approval. CreativeCode Engine remains separate and u
 - **Phase 1 — Foundation & Architecture: COMPLETE.** Competitor/name audit, Python CLI skeleton, SQLite schema v1, 9/9 cross-platform CI jobs.
 - **Phase 2 — Memory & Checkpoints: COMPLETE.** Explicit decisions/tasks, human-attested approval, observed evidence, real Git checkpoints, protected v1→v2 migration. 9/9 CI jobs passed.
 - **Phase 3 — AI Handoff & Skills: COMPLETE (9/9 GitHub Actions matrix jobs passed).** Versioned JSON/Markdown exports, safe read-only import validation, five portable Agent Skills, tests and docs.
-- **Phase 4 — Public Release: IN PROGRESS.** Production-grade test coverage, quick start, release packaging, security audit and compatibility hardening.
-- **Phase 5 — Real User Validation: NOT STARTED.** Measure context loss, handoff correctness, setup success and repeated use.
+- **Phase 4 — Public Release: IMPLEMENTATION/CI DONE; OFFICIAL TAG/PRE-RELEASE PENDING.** Tests, quick start, release packaging and security audit are verified. Do not claim a published GitHub Release.
+- **Phase 5 — Real User Validation: ACTIVE (recruiting; no external evidence yet).** Published opt-in study protocol, fixed answer key, feedback form and consent-gated local aggregate. Measure context loss, handoff correctness, setup success and actual repeat use; do not mark completed without independent participants.
 
 ## Phase 3 exit checklist
 
@@ -27,4 +27,16 @@ Phase changes require owner approval. CreativeCode Engine remains separate and u
 - [x] Initial internal security audit and package workflow documented.
 - [ ] GitHub Actions full compatibility matrix passing on latest commit.
 - [ ] Git tag and GitHub pre-release published, with checksum-verified artifacts.
-- [ ] Owner approval to begin Phase 5.
+- [x] Owner approval to begin Phase 5 (given on 2026-11-11).
+
+## Phase 5 exit criteria (pending real users)
+
+- [x] Owner approved Phase 5 on 2026-11-11; CreativeCode Engine remains unchanged.
+- [x] Independent-user guide, safety notes, fixed synthetic handoff + answer key prepared.
+- [x] Feedback submission path and consent-gated aggregate pipeline developed.
+- [ ] CI and hosted GitHub read-back for Phase 5 revision completed.
+- [ ] At least 8 independent consenting pilot reports and a documented review of failures.
+- [ ] At least 3 genuine seven-day repeat-use follow-up responses.
+- [ ] Owner review of go/no-go decision based on real observations.
+
+See [Phase 5 scorecard](VALIDATION_METRICS.md) and [current status](VALIDATION_STATUS.md).
