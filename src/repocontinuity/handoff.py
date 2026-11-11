@@ -380,8 +380,14 @@ def write_export(path: Path, body: str) -> None:
         raise ValueError("Do not write handoff files into Git internals or private state")
     if path.is_symlink() or path.exists():
         raise ValueError("Output path exists or is a symlink; choose a new filename")
-    if not path.parent.is_dir() or any(part.is_symlink() for part in (path.parent, *path.parent.parents)):
-        raise ValueError("Output directory must exist and have no symlinked ancestors")
+    # macOS exposes /var as a system-managed symlink to /private/var. Permit
+    # root-level aliases (OS-admin controlled), but reject symlinks within a
+    # user-controlled directory tree such as /tmp/project/alias/.
+    ancestors = (path.parent, *path.parent.parents)
+    if not path.parent.is_dir() or any(
+            part.is_symlink() and part.parent != Path(part.anchor)
+            for part in ancestors):
+        raise ValueError("Output directory must exist and have no user-controlled symlinked ancestors")
     flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
     if hasattr(os, "O_NOFOLLOW"):
         flags |= os.O_NOFOLLOW

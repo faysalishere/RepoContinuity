@@ -8,7 +8,7 @@ Scope: source inspection, explicit handoff validation hardening and temporary-re
 | Untrusted approvals | Imports always require human review and never write state | Approval labels remain user-asserted; no authentication |
 | Secrets | Allowlisted export fields, common-token/path redaction | Novel secrets or personal information may evade patterns; review before sharing |
 | SQLite | Local state, versioned schema, FK/status triggers, explicit backed-up migration | Local database is not tamper-proof; OS filesystem access matters |
-| Writing exports | Exclusive new-file creation, path policy, rejects symlink ancestors | Races from other privileged local processes are out of scope |
+| Writing exports | Exclusive new-file creation, path policy, rejects user-controlled symlink ancestors (OS-managed root aliases like macOS /var are allowed) | Races from other privileged local processes are out of scope |
 | Git provenance | Real commit SHA and dirty/staged flags; stale verification downgraded | Tests may be incomplete or unrepresentative |
 | Command execution | `evidence run` requires explicit user-supplied argv, finite timeout, no shell interpolation | Arbitrary explicitly chosen commands run with the user's own privileges |
 | Network and telemetry | No runtime network calls by CLI, demo, or validators | Installing/building via pip can contact index unless offline flags/caches used |
