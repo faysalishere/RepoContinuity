@@ -1,4 +1,4 @@
-# RepoContinuity v0.4.0b1 — Public Beta Candidate
+# RepoContinuity v0.4.0b1 — Public Beta Prerelease
 
 Local-first, evidence-aware project memory for developers using AI coding assistants.
 
@@ -19,4 +19,4 @@ Local-first, evidence-aware project memory for developers using AI coding assist
 
 Requires Python 3.11+ and Git. Download the source archive from the GitHub release and `python -m pip install .` from its extracted directory, or install the attached wheel via `python -m pip install path/to/repocontinuity-0.4.0b1-py3-none-any.whl`. No API key needed.
 
-See [2-minute quick start](docs/QUICK_START.md), [security audit](docs/SECURITY_AUDIT.md) and [release process](docs/RELEASE_PROCESS.md). Always inspect handoff contents for sensitive data before publication.
+See the [2-minute quick start](https://github.com/faysalishere/RepoContinuity/blob/main/docs/QUICK_START.md), [security audit](https://github.com/faysalishere/RepoContinuity/blob/main/docs/SECURITY_AUDIT.md) and [release process](https://github.com/faysalishere/RepoContinuity/blob/main/docs/RELEASE_PROCESS.md). [Independent tester feedback](https://github.com/faysalishere/RepoContinuity/issues/1) is welcome. Always inspect handoff contents for sensitive data before publication.

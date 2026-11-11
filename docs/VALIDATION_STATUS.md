@@ -1,6 +1,6 @@
 # Phase 5 validation status
 
-Status as of **2026-11-11**: **RECRUITMENT PREPARATION / NO INDEPENDENT REPORTS VERIFIED**.
+Status as of **2026-11-11**: **RECRUITING / NO INDEPENDENT REPORTS VERIFIED**.
 
 | Metric | Current verified value |
 | --- | ---: |
@@ -12,6 +12,6 @@ Status as of **2026-11-11**: **RECRUITMENT PREPARATION / NO INDEPENDENT REPORTS 
 
 Local automated tests and maintainer dogfooding are **not** real-user validation. These zeros are the initial baseline, not a running telemetry dashboard; update them only after verifying and reviewing user submissions. No automatic analytics or participant monitoring is enabled.
 
-**Outstanding dependency:** GitHub `v0.4.0b1` prerelease is not yet published. Testing can use the verified `main` checkout, but prerelease availability must not be claimed.
+**Release available:** [`v0.4.0b1` Public Beta prerelease](https://github.com/faysalishere/RepoContinuity/releases/tag/v0.4.0b1) was published on 2026-11-11, with wheel, source distribution and `SHA256SUMS.txt`; the tag CI and release workflow passed. **Independent user results remain unverified.**
 
 Next: share the opt-in study link, obtain independent observations, reproduce issues, and report both completion and refusal rates. Do not mark Phase 5 completed until evidence exists.

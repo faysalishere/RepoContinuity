@@ -4,13 +4,13 @@
 
 [![CI](https://github.com/faysalishere/RepoContinuity/actions/workflows/ci.yml/badge.svg)](https://github.com/faysalishere/RepoContinuity/actions/workflows/ci.yml)
 
-**Current status: `v0.4.0b1` (Phase 4 public-beta candidate).** RepoContinuity provides an explicit local CLI for project decisions, tasks, observed test outcomes, Git checkpoints and **versioned JSON/Markdown handoffs**. Five reusable, model-agnostic Agent Skills are included. **No automatic chat reading, session transfer, remote sync, model integration, or production-readiness certification.**
+**Current status: [`v0.4.0b1` Public Beta prerelease](https://github.com/faysalishere/RepoContinuity/releases/tag/v0.4.0b1) (published 2026-11-11).** RepoContinuity provides an explicit local CLI for project decisions, tasks, observed test outcomes, Git checkpoints and **versioned JSON/Markdown handoffs**. Five reusable, model-agnostic Agent Skills are included. **No automatic chat reading, session transfer, remote sync, model integration, or production-readiness certification.**
 
 ## Phase 5 — Independent user validation (open for feedback)
 
 **Seeking real testers.** Try the [10–15 minute, consent-based pilot](docs/USER_STUDY.md) and submit sanitized feedback via [GitHub's user-study issue form](https://github.com/faysalishere/RepoContinuity/issues/new/choose). A [fictional sample handoff](examples/study_handoff.md) and [answer key](docs/STUDY_ANSWER_KEY.md) help test context fidelity without sharing a real project. The [scorecard](docs/VALIDATION_METRICS.md) defines success and failure criteria **before** reports arrive. [Current validation status](docs/VALIDATION_STATUS.md): no independent participant results have yet been verified.
 
-The CLI remains local and opt-in; no analytics or report uploads are built in. Independent survey feedback should not be mistaken for an official GitHub pre-release: the `v0.4.0b1` tag/release is still pending.
+The CLI remains local and opt-in; no analytics or report uploads are built in. The official [`v0.4.0b1` GitHub prerelease](https://github.com/faysalishere/RepoContinuity/releases/tag/v0.4.0b1) is available with wheel, source distribution and SHA256 checksum assets. **Independent user validation is still pending**; a published beta does not establish product-market fit.
 
 ## What is different?
 
@@ -128,6 +128,6 @@ Run `repocontinuity <group> <command> --help` for exact flags. Removals are **so
 PYTHONPATH=src python -m unittest discover -s tests -v
 ```
 
-GitHub Actions tests Python 3.11–3.13 on Ubuntu, macOS and Windows. Until the current CI run is green, cross-platform support for this change is not verified. The project is a **public-beta candidate**; do not rely on it as a compliance platform or authoritative security audit. See [release notes](RELEASE_NOTES.md), [release process](docs/RELEASE_PROCESS.md) and [security audit](docs/SECURITY_AUDIT.md).
+GitHub Actions tests Python 3.11–3.13 on Ubuntu, macOS and Windows. The published beta tag passed its [10-job CI matrix](https://github.com/faysalishere/RepoContinuity/actions/runs/42962307385) and [release-build workflow](https://github.com/faysalishere/RepoContinuity/actions/runs/42962307517). Check CI again for subsequent commits. This remains a **public beta**, not a compliance platform or authoritative security audit. See [release notes](RELEASE_NOTES.md), [release process](docs/RELEASE_PROCESS.md) and [security audit](docs/SECURITY_AUDIT.md).
 
 MIT licensed. See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
