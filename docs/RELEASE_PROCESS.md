@@ -17,7 +17,7 @@ Verify a fresh virtualenv install from `dist/` and run `python -m repocontinuity
 
 `.github/workflows/release.yml` builds a wheel + source distribution on an **explicit `v*` Git tag** and attaches them to a GitHub pre-release. It is not triggered by ordinary pushes. The workflow verifies the tag equals the version in `pyproject.toml`, runs tests and quick start, packages files, and generates SHA-256 checksums. The release uses GitHub's ephemeral `GITHUB_TOKEN` with `contents: write` only for its publishing job.
 
-After all checks pass, the owner can create/push `v0.4.0b1` from the verified commit. **Do not move an existing release tag.** Review the [release notes](RELEASE_NOTES.md) before publishing.
+After all checks pass, the owner can create/push `v0.4.0b1` from the verified commit. Alternatively, on GitHub mobile/web open **Releases → Draft a new release**, create a new tag named `v0.4.0b1` from the verified `main` commit, select **This is a pre-release**, and publish. The tag push triggers the packaging workflow; if the prerelease already exists, the workflow attaches any missing assets without overwriting existing ones. **Do not move an existing release tag.** Review the [release notes](../RELEASE_NOTES.md) before publishing.
 
 ## Public support and limits
 

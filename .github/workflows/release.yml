@@ -33,12 +33,21 @@ jobs:
           python -m pip install --upgrade build
           python -m build --wheel --sdist --outdir dist
           (cd dist && sha256sum *.whl *.tar.gz > SHA256SUMS.txt)
-      - name: Create GitHub pre-release (never overwrite existing tags/releases)
+      - name: Create prerelease or safely attach assets to an existing prerelease
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 && { echo 'Release already exists; refusing overwrite'; exit 1; } || true
-          gh release create "$GITHUB_REF_NAME" dist/* \
-            --title "RepoContinuity $GITHUB_REF_NAME — Public Beta" \
-            --notes-file RELEASE_NOTES.md \
-            --prerelease --verify-tag
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            prerelease="$(gh release view "$GITHUB_REF_NAME" --json isPrerelease --jq .isPrerelease)"
+            if [ "$prerelease" != "true" ]; then
+              echo 'Existing release is not marked prerelease; refusing changes.' >&2
+              exit 1
+            fi
+            # No --clobber: never replace existing user-uploaded release assets.
+            gh release upload "$GITHUB_REF_NAME" dist/*
+          else
+            gh release create "$GITHUB_REF_NAME" dist/* \
+              --title "RepoContinuity $GITHUB_REF_NAME — Public Beta" \
+              --notes-file RELEASE_NOTES.md \
+              --prerelease --verify-tag
+          fi
