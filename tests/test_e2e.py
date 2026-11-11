@@ -96,6 +96,14 @@ class ReleaseIntegrationTests(unittest.TestCase):
         help_out = run([sys.executable, "-m", "repocontinuity", "handoff", "--help"], self.repo)
         self.assertIn("export", help_out.stdout)
 
+    def test_demo_with_relative_pythonpath_in_ci(self):
+        env = os.environ.copy()
+        env["PYTHONPATH"] = "src"  # GitHub Actions uses this from checkout root.
+        result = subprocess.run([sys.executable, str(ROOT / "examples/quickstart_demo.py"), "--yes"],
+                                cwd=ROOT, env=env, capture_output=True, text=True, timeout=25)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("DEMO COMPLETE", result.stdout)
+
     def test_disposable_demo_produces_unverified_not_false_claim(self):
         result = run([sys.executable, str(ROOT / "examples/quickstart_demo.py"), "--yes"], self.repo)
         self.assertEqual(result.returncode, 0, result.stderr)

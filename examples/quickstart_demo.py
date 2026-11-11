@@ -28,8 +28,13 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     root = Path(__file__).resolve().parents[1]
     env = os.environ.copy()
-    # Prefer the actually-installed wheel when present; use checkout source otherwise.
-    if find_spec("repocontinuity") is None:
+    # Prefer a wheel installed in site-packages. If the current Python sees the
+    # checkout via a *relative* PYTHONPATH (e.g. CI sets PYTHONPATH=src), make
+    # that path absolute before subprocesses switch into the temporary Git repo.
+    spec = find_spec("repocontinuity")
+    from_source = (spec is not None and spec.origin is not None and
+                   Path(spec.origin).resolve().is_relative_to(root / "src"))
+    if spec is None or from_source:
         env["PYTHONPATH"] = os.pathsep.join(filter(None, [str(root / "src"), env.get("PYTHONPATH")]))
 
     def pause(label: str) -> None:
